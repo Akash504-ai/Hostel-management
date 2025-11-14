@@ -78,7 +78,20 @@ const StudentDetailsView = () => {
 
   return (
     <>
-      <Link className="btn btn-light my-3" to="/">
+      {/* Go Back Button */}
+      <Link
+        to="/"
+        style={{
+          display: "inline-block",
+          padding: "8px 16px",
+          borderRadius: "6px",
+          background: "#f2f2f2",
+          border: "1px solid #ddd",
+          marginBottom: "20px",
+          textDecoration: "none",
+          color: "#000",
+        }}
+      >
         Go Back
       </Link>
 
@@ -92,7 +105,7 @@ const StudentDetailsView = () => {
           {errorDelete && <Message variant="danger">{errorDelete}</Message>}
 
           {student && (
-            <Row className="g-4">
+            <Row style={{ display: "flex", gap: "20px" }}>
               {/* Student Image */}
               <Col md={3}>
                 <Image
@@ -100,65 +113,96 @@ const StudentDetailsView = () => {
                   alt={student.name}
                   fluid
                   rounded
-                  className="shadow-sm"
+                  style={{
+                    width: "100%",
+                    borderRadius: "10px",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                  }}
                 />
               </Col>
 
-              {/* Basic Info */}
+              {/* Basic Info Card */}
               <Col md={4}>
-                <Card className="p-3 shadow-sm">
+                <Card
+                  style={{
+                    padding: "20px",
+                    borderRadius: "10px",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                    border: "none",
+                  }}
+                >
                   <ListGroup variant="flush">
-                    <ListGroup.Item>
-                      <h3 className="mb-0">{student.name}</h3>
-                      <small className="text-muted">
+                    <ListGroup.Item style={{ border: "none" }}>
+                      <h3 style={{ marginBottom: "5px" }}>{student.name}</h3>
+                      <small style={{ color: "#777" }}>
                         Stream: {student.category}
                       </small>
                     </ListGroup.Item>
-                    <ListGroup.Item>
+
+                    <ListGroup.Item style={{ border: "none" }}>
                       <strong>Phone:</strong>{" "}
-                      <a href={`tel:${student.contact}`}>{student.contact}</a>
+                      <a href={`tel:${student.contact}`}>
+                        {student.contact}
+                      </a>
                     </ListGroup.Item>
-                    <ListGroup.Item>
+
+                    <ListGroup.Item style={{ border: "none" }}>
                       <strong>Father’s Contact:</strong>{" "}
                       <a href={`tel:${student.fatherContact}`}>
                         {student.fatherContact}
                       </a>
                     </ListGroup.Item>
-                    <ListGroup.Item>
+
+                    <ListGroup.Item style={{ border: "none" }}>
                       <strong>City:</strong> {student.city}
                     </ListGroup.Item>
-                    <ListGroup.Item>
+
+                    <ListGroup.Item style={{ border: "none" }}>
                       <strong>Address:</strong> {student.address}
                     </ListGroup.Item>
                   </ListGroup>
                 </Card>
               </Col>
 
-              {/* Status / Update Section */}
+              {/* Status / Update Card */}
               <Col md={4}>
-                <Card className="p-3 shadow-sm">
+                <Card
+                  style={{
+                    padding: "20px",
+                    borderRadius: "10px",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+                    border: "none",
+                  }}
+                >
                   <ListGroup variant="flush">
-                    <ListGroup.Item>
+                    <ListGroup.Item style={{ border: "none" }}>
                       <Row>
                         <Col>Room No:</Col>
                         <Col>{student.roomNo}</Col>
                       </Row>
                     </ListGroup.Item>
-                    <ListGroup.Item>
+
+                    <ListGroup.Item style={{ border: "none" }}>
                       <Row>
                         <Col>Block No:</Col>
                         <Col>{student.blockNo}</Col>
                       </Row>
                     </ListGroup.Item>
-                    <ListGroup.Item>
+
+                    <ListGroup.Item style={{ border: "none" }}>
                       <Row>
                         <Col>Status:</Col>
                         <Col>
                           <Form.Control
-                            size="sm"
                             as="select"
+                            size="sm"
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
+                            style={{
+                              padding: "6px",
+                              borderRadius: "6px",
+                              border: "1px solid #ccc",
+                            }}
                           >
                             {["Hostel", "Outside", "Home"].map((x) => (
                               <option key={x} value={x}>
@@ -169,11 +213,19 @@ const StudentDetailsView = () => {
                         </Col>
                       </Row>
                     </ListGroup.Item>
-                    <ListGroup.Item>
+
+                    <ListGroup.Item style={{ border: "none" }}>
                       <Button
-                        className="w-100"
-                        variant="success"
                         onClick={updateStatus}
+                        style={{
+                          width: "100%",
+                          background: "#28a745",
+                          border: "none",
+                          padding: "10px",
+                          borderRadius: "6px",
+                          color: "#fff",
+                          fontWeight: "600",
+                        }}
                       >
                         Update Status
                       </Button>
@@ -183,17 +235,40 @@ const StudentDetailsView = () => {
               </Col>
 
               {/* Action Buttons */}
-              <Col md={1} className="d-flex flex-column justify-content-start">
-                <Button
-                  variant="outline-primary"
-                  className="mb-2"
-                  onClick={navigateToEdit}
+              <Col md={1}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
                 >
-                  <i className="fas fa-edit"></i>
-                </Button>
-                <Button variant="danger" onClick={deleteStudentHandler}>
-                  <i className="fas fa-trash"></i>
-                </Button>
+                  <Button
+                    onClick={navigateToEdit}
+                    style={{
+                      border: "1px solid #007bff",
+                      padding: "8px",
+                      borderRadius: "6px",
+                      color: "#007bff",
+                      background: "transparent",
+                    }}
+                  >
+                    <i className="fas fa-edit"></i>
+                  </Button>
+
+                  <Button
+                    onClick={deleteStudentHandler}
+                    style={{
+                      background: "#dc3545",
+                      border: "none",
+                      padding: "8px",
+                      borderRadius: "6px",
+                      color: "#fff",
+                    }}
+                  >
+                    <i className="fas fa-trash"></i>
+                  </Button>
+                </div>
               </Col>
             </Row>
           )}
