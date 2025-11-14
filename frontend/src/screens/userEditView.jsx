@@ -49,13 +49,37 @@ const UserEditView = () => {
 
   return (
     <>
-      <Link to="/userList" className="btn btn-light my-3">
+      <Link
+        to="/userList"
+        className="btn btn-light my-3"
+        style={{
+          padding: "8px 16px",
+          borderRadius: "6px",
+          background: "#f1f1f1",
+          border: "1px solid #ddd",
+        }}
+      >
         Go Back
       </Link>
 
       <FormContainer>
-        <Card className="p-4 shadow-sm border-0">
-          <h2 className="text-center mb-4">Edit User</h2>
+        <Card
+          style={{
+            padding: "30px",
+            border: "none",
+            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+            borderRadius: "12px",
+          }}
+        >
+          <h2
+            style={{
+              textAlign: "center",
+              marginBottom: "20px",
+              fontWeight: "600",
+            }}
+          >
+            Edit User
+          </h2>
 
           {loadingUpdate && <Loader />}
           {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
@@ -67,22 +91,34 @@ const UserEditView = () => {
           ) : (
             <Form onSubmit={submitHandler}>
               <Form.Group controlId="name" className="mb-3">
-                <Form.Label>Name</Form.Label>
+                <Form.Label style={{ fontWeight: "500" }}>Name</Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Enter name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                  }}
                 />
               </Form.Group>
 
               <Form.Group controlId="email" className="mb-3">
-                <Form.Label>Email Address</Form.Label>
+                <Form.Label style={{ fontWeight: "500" }}>
+                  Email Address
+                </Form.Label>
                 <Form.Control
                   type="email"
                   placeholder="Enter email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  style={{
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                  }}
                 />
               </Form.Group>
 
@@ -92,13 +128,21 @@ const UserEditView = () => {
                   label="Is Admin"
                   checked={isAdmin}
                   onChange={(e) => setIsAdmin(e.target.checked)}
+                  style={{ fontWeight: "500" }}
                 />
               </Form.Group>
 
               <Button
                 type="submit"
                 variant="primary"
-                className="w-100 py-2 fw-semibold"
+                className="w-100"
+                style={{
+                  padding: "12px",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  backgroundColor: "#007bff",
+                  border: "none",
+                }}
               >
                 Update User
               </Button>
