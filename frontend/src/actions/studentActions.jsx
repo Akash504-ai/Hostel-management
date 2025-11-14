@@ -21,7 +21,10 @@ import {
 import axios from "axios";
 
 // ✅ Correct backend base route
-const API_BASE_URL = "/api/student";
+const API_BASE_URL =
+  process.env.REACT_APP_BACKEND_URL ||
+  "https://hostel-management-h4q6.onrender.com/api/student";
+
 
 // 🧩 Get all students (paginated + search)
 export const listStudents = (keyword = "", pageNumber = "") => async (

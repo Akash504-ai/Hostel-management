@@ -26,7 +26,10 @@ import {
   USER_UPDATE_REQUEST,
 } from "../constants/userConstants";
 
-const API_BASE_URL = "/api/users"; // ✅ consistent API base path
+const API_BASE_URL =
+  process.env.REACT_APP_BACKEND_URL ||
+  "https://hostel-management-h4q6.onrender.com/api/users";
+
 
 // 🧩 User Login
 export const login = (email, password) => async (dispatch) => {
