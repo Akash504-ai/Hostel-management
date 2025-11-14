@@ -10,7 +10,7 @@ import {
 import { useDispatch } from "react-redux";
 import { getStudentsByRoomNo } from "../actions/studentActions";
 import AttendanceTable from "../components/attendanceTable";
-import { motion } from "framer-motion"; // Motion for smooth animations
+import { motion } from "framer-motion";
 
 const AttendanceView = () => {
   const [roomNo, setRoomNo] = useState("");
@@ -38,7 +38,7 @@ const AttendanceView = () => {
         overflow: "hidden",
       }}
     >
-      {/* Decorative floating circles */}
+      {/* Decorative circles */}
       <div
         style={{
           position: "absolute",
@@ -49,7 +49,6 @@ const AttendanceView = () => {
           background: "#93c5fd",
           borderRadius: "50%",
           opacity: 0.3,
-          zIndex: 0,
         }}
       ></div>
 
@@ -63,12 +62,11 @@ const AttendanceView = () => {
           background: "#bfdbfe",
           borderRadius: "50%",
           opacity: 0.3,
-          zIndex: 0,
         }}
       ></div>
 
-      <Container style={{ position: "relative", zIndex: 1 }}>
-        {/* HEADER SECTION */}
+      <Container style={{ position: "relative", zIndex: 2 }}>
+        {/* HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -89,48 +87,6 @@ const AttendanceView = () => {
           </p>
         </motion.div>
 
-        {/* METRICS SECTION */}
-        {roomNo && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            style={{
-              display: "flex",
-              gap: "20px",
-              justifyContent: "center",
-              marginBottom: "25px",
-              flexWrap: "wrap",
-            }}
-          >
-            {[
-              { title: "Selected Room", value: roomNo, color: "#2563eb" },
-              { title: "Total Students", value: "—", color: "#1e40af" },
-              { title: "Present Today", value: "—", color: "#16a34a" },
-              { title: "Absent", value: "—", color: "#dc2626" },
-            ].map((box, i) => (
-              <motion.div
-                key={i}
-                initial={{ scale: 0.9 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.1 * i }}
-                style={{
-                  background: box.color,
-                  padding: "18px 25px",
-                  borderRadius: "12px",
-                  color: "white",
-                  minWidth: "150px",
-                  textAlign: "center",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-                }}
-              >
-                <h5 style={{ margin: 0, fontWeight: 700 }}>{box.value}</h5>
-                <p style={{ margin: 0, fontSize: "0.9rem" }}>{box.title}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
-
         {/* MAIN CARD */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
@@ -148,7 +104,7 @@ const AttendanceView = () => {
           >
             <Card.Body className="p-5">
 
-              {/* Header */}
+              {/* Card Header */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -169,7 +125,7 @@ const AttendanceView = () => {
                 </p>
               </motion.div>
 
-              {/* FORM */}
+              {/* Search Form */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -220,7 +176,7 @@ const AttendanceView = () => {
                 </Form>
               </motion.div>
 
-              {/* EMPTY STATE */}
+              {/* EMPTY STATE (when roomNo is empty) */}
               {!roomNo && (
                 <motion.div
                   initial={{ opacity: 0 }}
@@ -233,15 +189,20 @@ const AttendanceView = () => {
                   }}
                 >
                   <img
-                    src="https://cdni.iconscout.com/illustration/premium/thumb/search-folder-illustration-download-in-svg-png-gif-file-formats--analytics-data-documents-pack-business-illustrations-4615650.png"
-                    alt="empty"
-                    style={{ width: "220px", marginBottom: "15px" }}
+                    src="https://undraw.co/api/illustrations/611cd8a124941e009c6f1e20"
+                    alt="empty-state"
+                    style={{
+                      width: "250px",
+                      marginBottom: "20px",
+                    }}
                   />
-                  <p>Enter a room number to get attendance details</p>
+                  <p style={{ fontSize: "1rem" }}>
+                    Enter a room number to get attendance details
+                  </p>
                 </motion.div>
               )}
 
-              {/* TABLE */}
+              {/* TABLE SECTION */}
               {roomNo && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
