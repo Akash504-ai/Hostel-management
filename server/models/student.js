@@ -14,7 +14,7 @@ const studentSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["General", "OBC", "SC", "ST", "Other"],
+      enum: ["CSE", "CSBS", "IT", "ECE", "EE", "ME", "CE", "Other"],
       default: "General",
     },
     city: {
