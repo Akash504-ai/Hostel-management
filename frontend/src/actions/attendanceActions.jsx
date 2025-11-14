@@ -14,9 +14,8 @@ import axios from "axios";
 
 // 🔹 Smart backend URL (works in local + production)
 const API_BASE_URL =
-  process.env.REACT_APP_BACKEND_URL || "http://localhost:5000/api/attendance";
-
-
+  process.env.REACT_APP_BACKEND_URL ||
+  "https://hostel-management-h4q6.onrender.com/api/attendance";
 
 // 🧩 Enter (Add/Update) Attendance
 export const postAttendance = (attendance) => async (dispatch, getState) => {
