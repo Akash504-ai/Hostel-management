@@ -10,7 +10,7 @@ import {
 import { useDispatch } from "react-redux";
 import { getStudentsByRoomNo } from "../actions/studentActions";
 import AttendanceTable from "../components/attendanceTable";
-import { motion } from "framer-motion"; // ⭐ Added Motion
+import { motion } from "framer-motion"; // Motion for smooth animations
 
 const AttendanceView = () => {
   const [roomNo, setRoomNo] = useState("");
@@ -31,13 +31,107 @@ const AttendanceView = () => {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
       style={{
-        backgroundColor: "#f8fafc",
+        background: "linear-gradient(135deg, #e0f2fe, #eff6ff)",
         minHeight: "100vh",
         padding: "50px 20px",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
-      <Container>
-        {/* Main Card Animation */}
+      {/* Decorative floating circles */}
+      <div
+        style={{
+          position: "absolute",
+          top: "-60px",
+          right: "-60px",
+          width: "180px",
+          height: "180px",
+          background: "#93c5fd",
+          borderRadius: "50%",
+          opacity: 0.3,
+          zIndex: 0,
+        }}
+      ></div>
+
+      <div
+        style={{
+          position: "absolute",
+          bottom: "-70px",
+          left: "-70px",
+          width: "200px",
+          height: "200px",
+          background: "#bfdbfe",
+          borderRadius: "50%",
+          opacity: 0.3,
+          zIndex: 0,
+        }}
+      ></div>
+
+      <Container style={{ position: "relative", zIndex: 1 }}>
+        {/* HEADER SECTION */}
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ textAlign: "center", marginBottom: "30px" }}
+        >
+          <h1
+            style={{
+              fontWeight: 800,
+              color: "#1e3a8a",
+              letterSpacing: "0.5px",
+            }}
+          >
+            📘 Hostel Attendance Dashboard
+          </h1>
+          <p style={{ color: "#64748b", marginTop: "8px" }}>
+            Manage daily attendance with ease and speed
+          </p>
+        </motion.div>
+
+        {/* METRICS SECTION */}
+        {roomNo && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{
+              display: "flex",
+              gap: "20px",
+              justifyContent: "center",
+              marginBottom: "25px",
+              flexWrap: "wrap",
+            }}
+          >
+            {[
+              { title: "Selected Room", value: roomNo, color: "#2563eb" },
+              { title: "Total Students", value: "—", color: "#1e40af" },
+              { title: "Present Today", value: "—", color: "#16a34a" },
+              { title: "Absent", value: "—", color: "#dc2626" },
+            ].map((box, i) => (
+              <motion.div
+                key={i}
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.1 * i }}
+                style={{
+                  background: box.color,
+                  padding: "18px 25px",
+                  borderRadius: "12px",
+                  color: "white",
+                  minWidth: "150px",
+                  textAlign: "center",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                }}
+              >
+                <h5 style={{ margin: 0, fontWeight: 700 }}>{box.value}</h5>
+                <p style={{ margin: 0, fontSize: "0.9rem" }}>{box.title}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+
+        {/* MAIN CARD */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -47,12 +141,14 @@ const AttendanceView = () => {
             className="shadow-sm mx-auto"
             style={{
               maxWidth: "900px",
-              borderRadius: "15px",
+              borderRadius: "18px",
               border: "none",
+              backdropFilter: "blur(10px)",
             }}
           >
             <Card.Body className="p-5">
-              {/* Header Animation */}
+
+              {/* Header */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -69,11 +165,11 @@ const AttendanceView = () => {
                   📝 Take Attendance
                 </h2>
                 <p className="text-muted mb-0">
-                  Enter a room number to view and update student attendance
+                  Enter a room number to load student attendance
                 </p>
               </motion.div>
 
-              {/* Search Form Animation */}
+              {/* FORM */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -98,20 +194,16 @@ const AttendanceView = () => {
                       />
                     </Col>
 
-                    {/* Button animation on hover */}
                     <Col xs="auto">
-                      <motion.div whileHover={{ scale: 1.05 }}>
+                      <motion.div whileHover={{ scale: 1.08 }}>
                         <Button
                           type="submit"
-                          variant="primary"
                           style={{
                             borderRadius: "25px",
                             padding: "10px 20px",
                             fontWeight: "600",
-                            letterSpacing: "0.3px",
                             backgroundColor: "#2563eb",
                             border: "none",
-                            transition: "all 0.3s ease",
                           }}
                           onMouseOver={(e) =>
                             (e.target.style.backgroundColor = "#1e40af")
@@ -120,7 +212,7 @@ const AttendanceView = () => {
                             (e.target.style.backgroundColor = "#2563eb")
                           }
                         >
-                          Get Students
+                          Search
                         </Button>
                       </motion.div>
                     </Col>
@@ -128,7 +220,28 @@ const AttendanceView = () => {
                 </Form>
               </motion.div>
 
-              {/* Attendance Table Animation */}
+              {/* EMPTY STATE */}
+              {!roomNo && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.5 }}
+                  style={{
+                    marginTop: "40px",
+                    textAlign: "center",
+                    color: "#64748b",
+                  }}
+                >
+                  <img
+                    src="https://cdni.iconscout.com/illustration/premium/thumb/search-folder-illustration-download-in-svg-png-gif-file-formats--analytics-data-documents-pack-business-illustrations-4615650.png"
+                    alt="empty"
+                    style={{ width: "220px", marginBottom: "15px" }}
+                  />
+                  <p>Enter a room number to get attendance details</p>
+                </motion.div>
+              )}
+
+              {/* TABLE */}
               {roomNo && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
