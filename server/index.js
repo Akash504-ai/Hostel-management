@@ -4,33 +4,48 @@ import morgan from "morgan";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import connectDB from "./config/mongoDBConfig.js"; // ✅ renamed for consistency
+import connectDB from "./config/mongoDBConfig.js";
 import userRoutes from "./routes/userRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import attendanceRoutes from "./routes/attendanceRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
-// Load environment variables
 dotenv.config();
-
-// Connect to MongoDB
 connectDB();
 
 const app = express();
 
-// Middleware
+// Logging
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
-// Enable CORS (important for frontend-backend communication)
-app.use(cors());
+/*  
+=====================================================
+🔥 CRITICAL CORS FIX (THIS SOLVES LOGIN PENDING ISSUE)
+=====================================================
+*/
+app.use(
+  cors({
+    origin: "*", // allow all frontend domains
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
+  })
+);
 
-// Parse JSON & URL-encoded payloads
+// IMPORTANT: respond to preflight OPTIONS requests
+app.options("*", cors());
+
+/* END CORS FIX */
+
+// Body parsers
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// API Routes
+// Routes
 app.use("/api/users", userRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/attendance", attendanceRoutes);
@@ -49,15 +64,12 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Error Handling Middleware
+// Error handlers
 app.use(notFound);
 app.use(errorHandler);
 
-// Server Start
+// Start server
 const PORT = process.env.PORT || 5000;
-
-app.listen(PORT, () => {
-  console.log(
-    `🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
-  );
-});
+app.listen(PORT, () =>
+  console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+);
