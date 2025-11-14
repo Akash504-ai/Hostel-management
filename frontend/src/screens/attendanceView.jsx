@@ -188,14 +188,14 @@ const AttendanceView = () => {
                     color: "#64748b",
                   }}
                 >
-                  <img
+                  {/* <img
                     src="https://undraw.co/api/illustrations/611cd8a124941e009c6f1e20"
                     alt="empty-state"
                     style={{
                       width: "250px",
                       marginBottom: "20px",
                     }}
-                  />
+                  /> */}
                   <p style={{ fontSize: "1rem" }}>
                     Enter a room number to get attendance details
                   </p>

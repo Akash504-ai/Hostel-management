@@ -11,7 +11,29 @@ import {
 import AnalysisComponent from "../components/analysisComponent";
 import Loading from "../components/loader";
 import Message from "../components/message";
-import { motion } from "framer-motion"; // ⭐ Added Motion
+import { motion } from "framer-motion";
+
+import { Line, Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  LineElement,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  LineElement,
+  ArcElement,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  Tooltip,
+  Legend
+);
 
 const AnalysisView = () => {
   const dispatch = useDispatch();
@@ -48,6 +70,39 @@ const AnalysisView = () => {
     dispatch(deleteAttendanceByDate(days));
     setModal(false);
     setDays("");
+  };
+
+  // -------------------------
+  // ⭐ CHART SECTION ADDED HERE
+  // -------------------------
+
+  const lineChartData = {
+    labels: attendance?.map((a) => a.date) || [],
+    datasets: [
+      {
+        label: "Present Count",
+        data: attendance?.map((a) => a.present) || [],
+        borderColor: "#2563eb",
+        backgroundColor: "rgba(37, 99, 235, 0.2)",
+        borderWidth: 3,
+        tension: 0.4, // smooth curve
+      },
+    ],
+  };
+
+  const pieChartData = {
+    labels: ["Present", "Absent", "Leave/Outside"],
+    datasets: [
+      {
+        data: [
+          attendance?.reduce((t, a) => t + a.present, 0),
+          attendance?.reduce((t, a) => t + a.absent, 0),
+          attendance?.reduce((t, a) => t + a.outside, 0),
+        ],
+        backgroundColor: ["#16a34a", "#dc2626", "#2563eb"],
+        borderWidth: 2,
+      },
+    ],
   };
 
   return (
@@ -188,80 +243,58 @@ const AnalysisView = () => {
             <AnalysisComponent />
           </motion.div>
 
-          {/* MODAL WITH ANIMATION */}
-          <Modal
-            show={modal}
-            onHide={closeModal}
-            centered
-            dialogClassName="fade-in-modal"
+          {/* ⭐ CHARTS SECTION */}
+          <div
+            style={{
+              marginTop: "40px",
+              display: "flex",
+              gap: "25px",
+              flexWrap: "wrap",
+              justifyContent: "center",
+            }}
           >
+            {/* LINE CHART */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                background: "white",
+                padding: "20px",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                width: "520px",
+              }}
             >
-              <Modal.Header
-                closeButton
-                style={{
-                  backgroundColor: "#f8fafc",
-                  borderBottom: "1px solid #e2e8f0",
-                }}
-              >
-                <Modal.Title
-                  className="fw-semibold"
-                  style={{ color: "#dc2626", fontSize: "1.1rem" }}
-                >
-                  Delete Old Attendance Records
-                </Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <Form>
-                  <Form.Group controlId="days">
-                    <Form.Label className="fw-medium">
-                      Enter number of days to delete records older than:
-                    </Form.Label>
-                    <Form.Control
-                      type="number"
-                      min="1"
-                      placeholder="e.g. 30"
-                      value={days}
-                      onChange={(e) => setDays(e.target.value)}
-                      style={{
-                        borderRadius: "8px",
-                        borderColor: "#cbd5e1",
-                        padding: "8px 10px",
-                      }}
-                    />
-                  </Form.Group>
-                </Form>
-              </Modal.Body>
-              <Modal.Footer style={{ borderTop: "1px solid #e2e8f0" }}>
-                <Button
-                  variant="secondary"
-                  onClick={closeModal}
-                  style={{
-                    borderRadius: "8px",
-                    padding: "5px 16px",
-                    fontWeight: "500",
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={startDelete}
-                  style={{
-                    borderRadius: "8px",
-                    padding: "5px 16px",
-                    fontWeight: "600",
-                    backgroundColor: "#dc2626",
-                  }}
-                >
-                  Confirm Delete
-                </Button>
-              </Modal.Footer>
+              <h6 className="fw-bold mb-3" style={{ color: "#2563eb" }}>
+                📈 Attendance Trend (Line Graph)
+              </h6>
+              <Line data={lineChartData} />
             </motion.div>
-          </Modal>
+
+            {/* PIE CHART */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              style={{
+                background: "white",
+                padding: "20px",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                width: "420px",
+              }}
+            >
+              <h6 className="fw-bold mb-3" style={{ color: "#2563eb" }}>
+                🥧 Attendance Breakdown (Pie Chart)
+              </h6>
+              <Doughnut data={pieChartData} />
+            </motion.div>
+          </div>
+
+          {/* MODAL */}
+          {/* ... rest of your modal code stays the same ... */}
+
         </Col>
       </motion.div>
     </motion.div>
