@@ -11,10 +11,7 @@ import {
 import AnalysisComponent from "../components/analysisComponent";
 import Loading from "../components/loader";
 import Message from "../components/message";
-import { motion } from "framer-motion";
-
-// ⭐ Using Chart.js V2 (WORKS WITH VERCEL + CRA)
-import { Line, Doughnut } from "react-chartjs-2";
+import { motion } from "framer-motion"; // ⭐ Added Motion
 
 const AnalysisView = () => {
   const dispatch = useDispatch();
@@ -51,41 +48,6 @@ const AnalysisView = () => {
     dispatch(deleteAttendanceByDate(days));
     setModal(false);
     setDays("");
-  };
-
-  // -------------------------
-  // ⭐ CHARTS (V2 COMPATIBLE)
-  // -------------------------
-
-  const lineChartData = {
-    labels: attendance?.map((a) => a.date) || [],
-    datasets: [
-      {
-        label: "Present Count",
-        data: attendance?.map((a) => a.present) || [],
-        borderColor: "#2563eb",
-        backgroundColor: "rgba(37, 99, 235, 0.25)",
-        borderWidth: 3,
-        pointRadius: 4,
-        lineTension: 0.4, // smooth curve
-      },
-    ],
-  };
-
-  const pieChartData = {
-    labels: ["Present", "Absent", "Outside"],
-    datasets: [
-      {
-        data: [
-          attendance?.reduce((t, a) => t + a.present, 0),
-          attendance?.reduce((t, a) => t + a.absent, 0),
-          attendance?.reduce((t, a) => t + a.outside, 0),
-        ],
-        backgroundColor: ["#16a34a", "#dc2626", "#2563eb"],
-        borderColor: "#fff",
-        borderWidth: 3,
-      },
-    ],
   };
 
   return (
@@ -202,7 +164,7 @@ const AnalysisView = () => {
             </Row>
           </motion.div>
 
-          {/* STATUS */}
+          {/* STATUS MESSAGES */}
           {(loadingDelete || loading) && <Loading />}
           {errorDelete && <Message variant="danger">{errorDelete}</Message>}
           {error && <Message variant="danger">{error}</Message>}
@@ -212,7 +174,7 @@ const AnalysisView = () => {
             </Message>
           )}
 
-          {/* TABLE */}
+          {/* ANALYSIS TABLE */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -226,84 +188,79 @@ const AnalysisView = () => {
             <AnalysisComponent />
           </motion.div>
 
-          {/* ⭐ CHARTS SECTION */}
-          <div
-            style={{
-              marginTop: "40px",
-              display: "flex",
-              gap: "25px",
-              flexWrap: "wrap",
-              justifyContent: "center",
-            }}
+          {/* MODAL WITH ANIMATION */}
+          <Modal
+            show={modal}
+            onHide={closeModal}
+            centered
+            dialogClassName="fade-in-modal"
           >
-            {/* LINE CHART */}
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{
-                background: "white",
-                padding: "20px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                width: "520px",
-              }}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
             >
-              <h6 className="fw-bold mb-3" style={{ color: "#2563eb" }}>
-                📈 Attendance Trend (Line Graph)
-              </h6>
-              <Line data={lineChartData} />
+              <Modal.Header
+                closeButton
+                style={{
+                  backgroundColor: "#f8fafc",
+                  borderBottom: "1px solid #e2e8f0",
+                }}
+              >
+                <Modal.Title
+                  className="fw-semibold"
+                  style={{ color: "#dc2626", fontSize: "1.1rem" }}
+                >
+                  Delete Old Attendance Records
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <Form>
+                  <Form.Group controlId="days">
+                    <Form.Label className="fw-medium">
+                      Enter number of days to delete records older than:
+                    </Form.Label>
+                    <Form.Control
+                      type="number"
+                      min="1"
+                      placeholder="e.g. 30"
+                      value={days}
+                      onChange={(e) => setDays(e.target.value)}
+                      style={{
+                        borderRadius: "8px",
+                        borderColor: "#cbd5e1",
+                        padding: "8px 10px",
+                      }}
+                    />
+                  </Form.Group>
+                </Form>
+              </Modal.Body>
+              <Modal.Footer style={{ borderTop: "1px solid #e2e8f0" }}>
+                <Button
+                  variant="secondary"
+                  onClick={closeModal}
+                  style={{
+                    borderRadius: "8px",
+                    padding: "5px 16px",
+                    fontWeight: "500",
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={startDelete}
+                  style={{
+                    borderRadius: "8px",
+                    padding: "5px 16px",
+                    fontWeight: "600",
+                    backgroundColor: "#dc2626",
+                  }}
+                >
+                  Confirm Delete
+                </Button>
+              </Modal.Footer>
             </motion.div>
-
-            {/* PIE CHART */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              style={{
-                background: "white",
-                padding: "20px",
-                borderRadius: "12px",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                width: "420px",
-              }}
-            >
-              <h6 className="fw-bold mb-3" style={{ color: "#2563eb" }}>
-                🥧 Attendance Breakdown (Pie Chart)
-              </h6>
-              <Doughnut data={pieChartData} />
-            </motion.div>
-          </div>
-
-          {/* MODAL (unchanged) */}
-          <Modal show={modal} onHide={closeModal} centered>
-            <Modal.Header closeButton>
-              <Modal.Title style={{ color: "#dc2626" }}>
-                Delete Old Attendance
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form>
-                <Form.Group>
-                  <Form.Label>Enter number of days</Form.Label>
-                  <Form.Control
-                    type="number"
-                    min="1"
-                    value={days}
-                    onChange={(e) => setDays(e.target.value)}
-                    placeholder="e.g. 30"
-                  />
-                </Form.Group>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={closeModal}>
-                Cancel
-              </Button>
-              <Button variant="danger" onClick={startDelete}>
-                Confirm Delete
-              </Button>
-            </Modal.Footer>
           </Modal>
         </Col>
       </motion.div>
@@ -311,4 +268,4 @@ const AnalysisView = () => {
   );
 };
 
-export default AnalysisView;
+export default AnalysisView; 
