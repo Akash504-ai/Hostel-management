@@ -55,7 +55,7 @@ const Loading = () => {
             color: "#2563eb",
           }}
         >
-          <span className="visually-hidden">Loading...</span>
+          {/* <span className="visually-hidden">Loading...</span> */}
         </Spinner>
       </div>
 
