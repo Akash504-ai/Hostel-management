@@ -13,27 +13,8 @@ import Loading from "../components/loader";
 import Message from "../components/message";
 import { motion } from "framer-motion";
 
+// ⭐ Using Chart.js V2 (WORKS WITH VERCEL + CRA)
 import { Line, Doughnut } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  LineElement,
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(
-  LineElement,
-  ArcElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend
-);
 
 const AnalysisView = () => {
   const dispatch = useDispatch();
@@ -73,7 +54,7 @@ const AnalysisView = () => {
   };
 
   // -------------------------
-  // ⭐ CHART SECTION ADDED HERE
+  // ⭐ CHARTS (V2 COMPATIBLE)
   // -------------------------
 
   const lineChartData = {
@@ -83,15 +64,16 @@ const AnalysisView = () => {
         label: "Present Count",
         data: attendance?.map((a) => a.present) || [],
         borderColor: "#2563eb",
-        backgroundColor: "rgba(37, 99, 235, 0.2)",
+        backgroundColor: "rgba(37, 99, 235, 0.25)",
         borderWidth: 3,
-        tension: 0.4, // smooth curve
+        pointRadius: 4,
+        lineTension: 0.4, // smooth curve
       },
     ],
   };
 
   const pieChartData = {
-    labels: ["Present", "Absent", "Leave/Outside"],
+    labels: ["Present", "Absent", "Outside"],
     datasets: [
       {
         data: [
@@ -100,7 +82,8 @@ const AnalysisView = () => {
           attendance?.reduce((t, a) => t + a.outside, 0),
         ],
         backgroundColor: ["#16a34a", "#dc2626", "#2563eb"],
-        borderWidth: 2,
+        borderColor: "#fff",
+        borderWidth: 3,
       },
     ],
   };
@@ -219,7 +202,7 @@ const AnalysisView = () => {
             </Row>
           </motion.div>
 
-          {/* STATUS MESSAGES */}
+          {/* STATUS */}
           {(loadingDelete || loading) && <Loading />}
           {errorDelete && <Message variant="danger">{errorDelete}</Message>}
           {error && <Message variant="danger">{error}</Message>}
@@ -229,7 +212,7 @@ const AnalysisView = () => {
             </Message>
           )}
 
-          {/* ANALYSIS TABLE */}
+          {/* TABLE */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -292,9 +275,36 @@ const AnalysisView = () => {
             </motion.div>
           </div>
 
-          {/* MODAL */}
-          {/* ... rest of your modal code stays the same ... */}
-
+          {/* MODAL (unchanged) */}
+          <Modal show={modal} onHide={closeModal} centered>
+            <Modal.Header closeButton>
+              <Modal.Title style={{ color: "#dc2626" }}>
+                Delete Old Attendance
+              </Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form>
+                <Form.Group>
+                  <Form.Label>Enter number of days</Form.Label>
+                  <Form.Control
+                    type="number"
+                    min="1"
+                    value={days}
+                    onChange={(e) => setDays(e.target.value)}
+                    placeholder="e.g. 30"
+                  />
+                </Form.Group>
+              </Form>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={closeModal}>
+                Cancel
+              </Button>
+              <Button variant="danger" onClick={startDelete}>
+                Confirm Delete
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </Col>
       </motion.div>
     </motion.div>
