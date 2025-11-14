@@ -1,20 +1,19 @@
 import dotenv from "dotenv";
 import students from "./data/students.js";
 import Student from "./models/student.js";
-
 import connectDB from "./config/db.js";
 
 dotenv.config();
-
 connectDB();
 
 const importData = async () => {
   try {
     await Student.deleteMany();
-    console.log("Data Imported!");
+    await Student.insertMany(students); // added to actually import data
+    console.log("✅ Data Imported Successfully!");
     process.exit();
   } catch (error) {
-    console.error(`${error}`);
+    console.error(`❌ Error Importing Data: ${error.message}`);
     process.exit(1);
   }
 };
@@ -22,10 +21,10 @@ const importData = async () => {
 const destroyData = async () => {
   try {
     await Student.deleteMany();
-    console.log("Data Destroyed!");
+    console.log("🗑️  Data Destroyed Successfully!");
     process.exit();
   } catch (error) {
-    console.error(`${error}`);
+    console.error(`❌ Error Destroying Data: ${error.message}`);
     process.exit(1);
   }
 };

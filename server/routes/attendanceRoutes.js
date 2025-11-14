@@ -6,10 +6,39 @@ import {
   getAttendanceByRoomNo,
 } from "../controllers/attendanceController.js";
 import { protect, admin } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-router.route("/:roomId").get(protect, getAttendanceByRoomNo);
-router.route("/").post(protect, admin, enterAttendanceByRoomNo);
-router.route("/:days").delete(protect, admin, deleteAttendanceByDays);
-router.route("/getAnalysis").post(protect, getAttendance);
+
+/**
+ * ✅ Get attendance for a specific room and date
+ * @route POST /api/attendance/room
+ * @access Private/Admin
+ * Body: { roomNo: "101", date?: "Thu Nov 06 2025" }
+ */
+router.post("/room", protect, admin, getAttendanceByRoomNo);
+
+/**
+ * ✅ Create or update attendance (per date)
+ * @route POST /api/attendance
+ * @access Private/Admin
+ * Body: { roomNo, data, details, date? }
+ */
+router.post("/", protect, admin, enterAttendanceByRoomNo);
+
+/**
+ * ✅ Get daily attendance summary / analysis
+ * @route POST /api/attendance/analysis
+ * @access Private/Admin
+ * Body: { date?: "Thu Nov 06 2025" }
+ */
+router.post("/analysis", protect, admin, getAttendance);
+
+/**
+ * ✅ Delete attendance records older than X days
+ * @route DELETE /api/attendance/cleanup/:days
+ * @access Private/Admin
+ * Example: DELETE /api/attendance/cleanup/30
+ */
+router.delete("/cleanup/:days", protect, admin, deleteAttendanceByDays);
 
 export default router;

@@ -1,31 +1,28 @@
 import mongoose from "mongoose";
 
-const attendanceSchema = mongoose.Schema(
+const attendanceSchema = new mongoose.Schema(
   {
-    roomNo: {
-      type: Array,
-      required: true,
-    },
-    date: {
-      type: String,
-      default: Date().toString().substring(0, 15),
-    },
+    date: { type: String, required: true },
+
+    // Store multiple room numbers (strings)
+    roomNo: { type: [String], default: [] },
+
+    // Map of studentId → status (Hostel, Home, Outside)
     data: {
       type: Map,
-      required: true,
+      of: String,
       default: {},
     },
+
+    // Map of studentId → info object (name, contact, roomNo)
     details: {
       type: Map,
-      required: true,
+      of: Object,
       default: {},
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 const Attendance = mongoose.model("Attendance", attendanceSchema);
-
 export default Attendance;

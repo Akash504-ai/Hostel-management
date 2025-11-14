@@ -2,16 +2,16 @@ import {
   STUDENT_LIST_REQUEST,
   STUDENT_LIST_SUCCESS,
   STUDENT_LIST_ERROR,
-  STUDENT_ADD_ERROR,
   STUDENT_ADD_REQUEST,
   STUDENT_ADD_SUCCESS,
-  STUDENT_UPDATE_ERROR,
+  STUDENT_ADD_ERROR,
   STUDENT_UPDATE_REQUEST,
   STUDENT_UPDATE_SUCCESS,
+  STUDENT_UPDATE_ERROR,
   STUDENT_UPDATE_RESET,
-  STUDENT_DELETE_ERROR,
   STUDENT_DELETE_REQUEST,
   STUDENT_DELETE_SUCCESS,
+  STUDENT_DELETE_ERROR,
   STUDENT_DELETE_RESET,
   STUDENT_DETAILS_REQUEST,
   STUDENT_DETAILS_SUCCESS,
@@ -22,10 +22,12 @@ import {
   STUDENT_ROOM_NO_RESET,
 } from "../constants/studentConstant";
 
+// 📋 Reducer: List Students
 export const studentListReducer = (state = { students: [] }, action) => {
   switch (action.type) {
     case STUDENT_LIST_REQUEST:
       return { ...state, loading: true };
+
     case STUDENT_LIST_SUCCESS:
       return {
         loading: false,
@@ -33,6 +35,7 @@ export const studentListReducer = (state = { students: [] }, action) => {
         pages: action.payload.pages,
         page: action.payload.page,
       };
+
     case STUDENT_LIST_ERROR:
       return { loading: false, error: action.payload };
 
@@ -41,12 +44,15 @@ export const studentListReducer = (state = { students: [] }, action) => {
   }
 };
 
-export const studentAddReducer = (state = { students: {} }, action) => {
+// ➕ Reducer: Add Student
+export const studentAddReducer = (state = {}, action) => {
   switch (action.type) {
     case STUDENT_ADD_REQUEST:
-      return { ...state, loading: true };
+      return { loading: true };
+
     case STUDENT_ADD_SUCCESS:
       return { loading: false, success: true };
+
     case STUDENT_ADD_ERROR:
       return { loading: false, error: action.payload };
 
@@ -55,12 +61,15 @@ export const studentAddReducer = (state = { students: {} }, action) => {
   }
 };
 
-export const studentDetailsReducer = (state = {}, action) => {
+// 🔍 Reducer: Get Student Details
+export const studentDetailsReducer = (state = { student: {} }, action) => {
   switch (action.type) {
     case STUDENT_DETAILS_REQUEST:
       return { ...state, loading: true };
+
     case STUDENT_DETAILS_SUCCESS:
       return { loading: false, student: action.payload };
+
     case STUDENT_DETAILS_ERROR:
       return { loading: false, error: action.payload };
 
@@ -69,14 +78,18 @@ export const studentDetailsReducer = (state = {}, action) => {
   }
 };
 
+// ✏️ Reducer: Update Student
 export const studentUpdateReducer = (state = {}, action) => {
   switch (action.type) {
     case STUDENT_UPDATE_REQUEST:
-      return { ...state, loading: true };
+      return { loading: true };
+
     case STUDENT_UPDATE_SUCCESS:
       return { loading: false, success: true };
+
     case STUDENT_UPDATE_ERROR:
       return { loading: false, error: action.payload };
+
     case STUDENT_UPDATE_RESET:
       return {};
 
@@ -85,14 +98,18 @@ export const studentUpdateReducer = (state = {}, action) => {
   }
 };
 
+// ❌ Reducer: Delete Student
 export const studentDeleteReducer = (state = {}, action) => {
   switch (action.type) {
     case STUDENT_DELETE_REQUEST:
-      return { ...state, loading: true };
+      return { loading: true };
+
     case STUDENT_DELETE_SUCCESS:
       return { loading: false, success: true };
+
     case STUDENT_DELETE_ERROR:
       return { loading: false, error: action.payload };
+
     case STUDENT_DELETE_RESET:
       return {};
 
@@ -100,18 +117,23 @@ export const studentDeleteReducer = (state = {}, action) => {
       return state;
   }
 };
+
+// 🏠 Reducer: Get Students by Room No
 export const getStudentsByRoomNoReducer = (state = {}, action) => {
   switch (action.type) {
     case STUDENT_ROOM_NO_REQUEST:
-      return { ...state, loading: true };
+      return { loading: true };
+
     case STUDENT_ROOM_NO_SUCCESS:
       return {
         loading: false,
         students: action.payload.students,
         attendance: action.payload.attendance,
       };
+
     case STUDENT_ROOM_NO_ERROR:
       return { loading: false, error: action.payload };
+
     case STUDENT_ROOM_NO_RESET:
       return {};
 

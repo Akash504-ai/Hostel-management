@@ -10,12 +10,37 @@ import {
 import { protect, admin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-router.route("/all").get(protect, getAllStudents);
-router.route("/addStudent").post(protect, admin, addStudent);
+
+/**
+ * @desc    Get all students (with pagination & search)
+ * @route   GET /student/all
+ * @access  Private
+ */
+router.get("/all", protect, getAllStudents);
+
+/**
+ * @desc    Add a new student
+ * @route   POST /student/add
+ * @access  Private/Admin
+ */
+router.post("/add", protect, admin, addStudent);
+
+/**
+ * @desc    Get students by room number
+ * @route   GET /student/room/:roomId
+ * @access  Private
+ */
+router.get("/room/:roomId", protect, getStudentByRoomNo);
+
+/**
+ * @desc    Get, Update, or Delete a student by ID
+ * @route   /student/:id
+ * @access  Private/Admin (delete/update), Private (get)
+ */
 router
   .route("/:id")
   .get(protect, getStudentById)
-  .delete(protect, admin, deleteStudent)
-  .put(protect, admin, updateStudentProfile);
-router.route("/room/:roomId").get(getStudentByRoomNo);
+  .put(protect, admin, updateStudentProfile)
+  .delete(protect, admin, deleteStudent);
+
 export default router;

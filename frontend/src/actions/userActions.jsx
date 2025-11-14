@@ -26,41 +26,34 @@ import {
   USER_UPDATE_REQUEST,
 } from "../constants/userConstants";
 
+const API_BASE_URL = "/api/users"; // ✅ consistent API base path
+
+// 🧩 User Login
 export const login = (email, password) => async (dispatch) => {
   try {
-    dispatch({
-      type: USER_LOGIN_REQUEST,
-    });
+    dispatch({ type: USER_LOGIN_REQUEST });
 
     const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     };
 
     const { data } = await axios.post(
-      "/users/login",
+      `${API_BASE_URL}/login`,
       { email, password },
       config
     );
 
-    dispatch({
-      type: USER_LOGIN_SUCCESS,
-      payload: data,
-    });
-
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
       type: USER_LOGIN_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
+// 🧩 Logout
 export const logout = () => (dispatch) => {
   localStorage.removeItem("userInfo");
   dispatch({ type: USER_LOGOUT });
@@ -69,232 +62,154 @@ export const logout = () => (dispatch) => {
   document.location.href = "/login";
 };
 
+// 🧩 Register New User
 export const register = (name, email, password) => async (dispatch) => {
   try {
-    dispatch({
-      type: USER_REGISTER_REQUEST,
-    });
+    dispatch({ type: USER_REGISTER_REQUEST });
 
     const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
     };
 
     const { data } = await axios.post(
-      "/users",
+      `${API_BASE_URL}`,
       { name, email, password },
       config
     );
 
-    dispatch({
-      type: USER_REGISTER_SUCCESS,
-      payload: data,
-    });
-
-    dispatch({
-      type: USER_LOGIN_SUCCESS,
-      payload: data,
-    });
+    dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
 
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
       type: USER_REGISTER_FAIL,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
+// 🧩 Get User Details (profile or by ID)
 export const getUserDetails = (id) => async (dispatch, getState) => {
   try {
-    dispatch({
-      type: USER_DETAILS_REQUEST,
-    });
+    dispatch({ type: USER_DETAILS_REQUEST });
 
     const {
       userLogin: { userInfo },
     } = getState();
 
     const config = {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
+      headers: { Authorization: `Bearer ${userInfo.token}` },
     };
 
-    const { data } = await axios.get(`/users/${id}`, config);
-
-    dispatch({
-      type: USER_DETAILS_SUCCESS,
-      payload: data,
-    });
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
-    if (message === "Not authorized, token failed") {
-      dispatch(logout());
-    }
-    dispatch({
-      type: USER_DETAILS_FAIL,
-      payload: message,
-    });
-  }
-};
-
-export const updateUserProfile = (user) => async (dispatch, getState) => {
-  try {
-    dispatch({
-      type: USER_UPDATE_PROFILE_REQUEST,
-    });
-
-    const {
-      userLogin: { userInfo },
-    } = getState();
-
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
-
-    const { data } = await axios.put(`/users/profile`, user, config);
-
-    dispatch({
-      type: USER_UPDATE_PROFILE_SUCCESS,
-      payload: data,
-    });
-    dispatch({
-      type: USER_LOGIN_SUCCESS,
-      payload: data,
-    });
-    localStorage.setItem("userInfo", JSON.stringify(data));
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
-    if (message === "Not authorized, token failed") {
-      dispatch(logout());
-    }
-    dispatch({
-      type: USER_UPDATE_PROFILE_FAIL,
-      payload: message,
-    });
-  }
-};
-
-export const listUsers = () => async (dispatch, getState) => {
-  try {
-    dispatch({
-      type: USER_LIST_REQUEST,
-    });
-
-    const {
-      userLogin: { userInfo },
-    } = getState();
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
-
-    const { data } = await axios.get(`/users`, config);
-
-    dispatch({
-      type: USER_LIST_SUCCESS,
-      payload: data,
-    });
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
-    if (message === "Not authorized, token failed") {
-      dispatch(logout());
-    }
-    dispatch({
-      type: USER_LIST_FAIL,
-      payload: message,
-    });
-  }
-};
-
-export const deleteUser = (id) => async (dispatch, getState) => {
-  try {
-    dispatch({
-      type: USER_DELETE_REQUEST,
-    });
-
-    const {
-      userLogin: { userInfo },
-    } = getState();
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
-
-    await axios.delete(`/users/${id}`, config);
-
-    dispatch({ type: USER_DELETE_SUCCESS });
-  } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
-    if (message === "Not authorized, token failed") {
-      dispatch(logout());
-    }
-    dispatch({
-      type: USER_DELETE_FAIL,
-      payload: message,
-    });
-  }
-};
-
-export const updateUser = (user) => async (dispatch, getState) => {
-  try {
-    dispatch({
-      type: USER_UPDATE_REQUEST,
-    });
-
-    const {
-      userLogin: { userInfo },
-    } = getState();
-
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
-      },
-    };
-
-    const { data } = await axios.put(`/users/${user._id}`, user, config);
-
-    dispatch({ type: USER_UPDATE_SUCCESS });
+    const { data } = await axios.get(`${API_BASE_URL}/${id}`, config);
 
     dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    if (message === "Not authorized, token failed") dispatch(logout());
+    dispatch({ type: USER_DETAILS_FAIL, payload: message });
+  }
+};
 
+// 🧩 Update Logged-in User Profile
+export const updateUserProfile = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER_UPDATE_PROFILE_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.put(`${API_BASE_URL}/profile`, user, config);
+
+    dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
+
+    localStorage.setItem("userInfo", JSON.stringify(data));
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    if (message === "Not authorized, token failed") dispatch(logout());
+    dispatch({ type: USER_UPDATE_PROFILE_FAIL, payload: message });
+  }
+};
+
+// 🧩 Get All Users (Admin)
+export const listUsers = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER_LIST_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: { Authorization: `Bearer ${userInfo.token}` },
+    };
+
+    const { data } = await axios.get(`${API_BASE_URL}`, config);
+
+    dispatch({ type: USER_LIST_SUCCESS, payload: data });
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    if (message === "Not authorized, token failed") dispatch(logout());
+    dispatch({ type: USER_LIST_FAIL, payload: message });
+  }
+};
+
+// 🧩 Delete User (Admin)
+export const deleteUser = (id) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER_DELETE_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: { Authorization: `Bearer ${userInfo.token}` },
+    };
+
+    await axios.delete(`${API_BASE_URL}/${id}`, config);
+    dispatch({ type: USER_DELETE_SUCCESS });
+  } catch (error) {
+    const message = error.response?.data?.message || error.message;
+    if (message === "Not authorized, token failed") dispatch(logout());
+    dispatch({ type: USER_DELETE_FAIL, payload: message });
+  }
+};
+
+// 🧩 Update User (Admin)
+export const updateUser = (user) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: USER_UPDATE_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+
+    const { data } = await axios.put(`${API_BASE_URL}/${user._id}`, user, config);
+
+    dispatch({ type: USER_UPDATE_SUCCESS });
+    dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
     dispatch({ type: USER_DETAILS_RESET });
   } catch (error) {
-    const message =
-      error.response && error.response.data.message
-        ? error.response.data.message
-        : error.message;
-    if (message === "Not authorized, token failed") {
-      dispatch(logout());
-    }
-    dispatch({
-      type: USER_UPDATE_FAIL,
-      payload: message,
-    });
+    const message = error.response?.data?.message || error.message;
+    if (message === "Not authorized, token failed") dispatch(logout());
+    dispatch({ type: USER_UPDATE_FAIL, payload: message });
   }
 };

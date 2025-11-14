@@ -1,51 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import Loading from "./loader";
-import Message from "./message";
-import AttendanceTableComponent from "./attendanceTableComponent";
+import { useSelector } from "react-redux";
+import Loading from "./loader.jsx";
+import Message from "./message.jsx";
+import AttendanceTableComponent from "./attendanceTableComponent.jsx";
 
 const AttendanceTable = ({ roomNo }) => {
-  const dispatch = useDispatch();
   const [attendanceMap, setAttendanceMap] = useState({});
 
+  // Redux: students + existing attendance record (if found)
   const getStudentsByRoomNo = useSelector((state) => state.getStudentsByRoomNo);
   const { loading, error, students, attendance } = getStudentsByRoomNo;
-  const attendanceDataEnter = useSelector((state) => state.attendanceDataEnter);
-  const {
-    loading: loadingAttendance,
-    error: errorAttendance,
-  } = attendanceDataEnter;
-  useEffect(() => {
-    if (students) {
-      arrangeTable();
-    }
-  }, [dispatch, attendance, attendanceMap, students]);
 
-  const arrangeTable = () => {
-    if (attendance) {
-      var tempMap = attendanceMap;
-      students.map((student) => {
-        if (attendance.data[student._id]) {
-          tempMap[student._id] = attendance.data[student._id];
-        } else {
-          tempMap[student._id] = "Hostel";
-        }
+  // Redux: update attendance loading/error
+  const attendanceDataEnter = useSelector((state) => state.attendanceDataEnter);
+  const { loading: loadingAttendance, error: errorAttendance } = attendanceDataEnter;
+
+  /*****************************************************
+   * Build attendanceMap ONLY when both are available
+   *****************************************************/
+  useEffect(() => {
+    if (!students || students.length === 0) return;
+
+    const newMap = {};
+
+    // If old attendance exists, load DB values
+    if (attendance && attendance.data) {
+      students.forEach((student) => {
+        newMap[student._id] =
+          attendance.data[student._id] || "Hostel";
       });
-      setAttendanceMap(attendanceMap);
     } else {
-      students.map((student) => {
-        var temp = attendanceMap;
-        temp[student._id] = "Hostel";
-        setAttendanceMap(temp);
+      // No attendance → fill defaults
+      students.forEach((student) => {
+        newMap[student._id] = "Hostel";
       });
     }
-    var temp = attendanceMap;
-    setAttendanceMap(temp);
-  };
+
+    setAttendanceMap(newMap);
+  }, [students, attendance]);
 
   return (
     <>
       {error && <Message variant="danger">{error}</Message>}
+
       {loading || loadingAttendance ? (
         <Loading />
       ) : (
@@ -53,16 +50,15 @@ const AttendanceTable = ({ roomNo }) => {
           {errorAttendance && (
             <Message variant="danger">{errorAttendance}</Message>
           )}
-          {students && (
-            <>
-              <AttendanceTableComponent
-                students={students}
-                attendanceMap={attendanceMap}
-                setAttendanceMap={setAttendanceMap}
-                attendance={attendance}
-                roomNo={roomNo}
-              />
-            </>
+
+          {students && students.length > 0 && (
+            <AttendanceTableComponent
+              students={students}
+              attendanceMap={attendanceMap}
+              setAttendanceMap={setAttendanceMap}
+              attendance={attendance}
+              roomNo={roomNo}
+            />
           )}
         </>
       )}

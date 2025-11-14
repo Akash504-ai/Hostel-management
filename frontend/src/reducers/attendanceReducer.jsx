@@ -10,19 +10,21 @@ import {
   ATTENDANCE_DELETE_REQUEST,
   ATTENDANCE_DELETE_SUCCESS,
   ATTENDANCE_DELETE_FAIL,
+  ATTENDANCE_DELETE_RESET,
 } from "../constants/attendanceConstant";
 
+// 🟩 Reducer: Enter Attendance Data
 export const attendanceDataEnterReducer = (state = {}, action) => {
   switch (action.type) {
     case ATTENDANCE_DATA_ENTER_REQUEST:
       return { ...state, loading: true };
+
     case ATTENDANCE_DATA_ENTER_SUCCESS:
-      return {
-        loading: false,
-        attendance: action.payload,
-      };
+      return { loading: false, success: true, attendance: action.payload };
+
     case ATTENDANCE_DATA_ENTER_FAIL:
       return { loading: false, error: action.payload };
+
     case ATTENDANCE_DATA_ENTER_RESET:
       return {};
 
@@ -31,17 +33,18 @@ export const attendanceDataEnterReducer = (state = {}, action) => {
   }
 };
 
+// 🧾 Reducer: Get Attendance Analysis
 export const attendanceAnalysisReducer = (state = {}, action) => {
   switch (action.type) {
     case ATTENDANCE_ANALYSIS_REQUEST:
       return { loading: true };
+
     case ATTENDANCE_ANALYSIS_SUCCESS:
-      return {
-        loading: false,
-        attendance: action.payload,
-      };
+      return { loading: false, attendance: action.payload };
+
     case ATTENDANCE_ANALYSIS_FAIL:
       return { loading: false, error: action.payload };
+
     case ATTENDANCE_ANALYSIS_RESET:
       return {};
 
@@ -50,18 +53,19 @@ export const attendanceAnalysisReducer = (state = {}, action) => {
   }
 };
 
+// ❌ Reducer: Delete Attendance Records
 export const deleteAttendanceReducer = (state = {}, action) => {
   switch (action.type) {
     case ATTENDANCE_DELETE_REQUEST:
       return { loading: true };
+
     case ATTENDANCE_DELETE_SUCCESS:
-      return {
-        loading: false,
-        success: true,
-      };
+      return { loading: false, success: true };
+
     case ATTENDANCE_DELETE_FAIL:
       return { loading: false, error: action.payload };
-    case ATTENDANCE_ANALYSIS_RESET:
+
+    case ATTENDANCE_DELETE_RESET:
       return {};
 
     default:

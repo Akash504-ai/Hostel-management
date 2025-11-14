@@ -20,25 +20,33 @@ import {
 } from "../constants/studentConstant";
 import axios from "axios";
 
+// ✅ Correct backend base route
+const API_BASE_URL = "/api/student";
+
+// 🧩 Get all students (paginated + search)
 export const listStudents = (keyword = "", pageNumber = "") => async (
   dispatch,
   getState
 ) => {
   try {
     dispatch({ type: STUDENT_LIST_REQUEST });
+
     const {
       userLogin: { userInfo },
     } = getState();
+
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
 
+    // Backend expects: /student/all?keyword=&page=
     const { data } = await axios.get(
-      `/student/all?keyword=${keyword}&pageNumber=${pageNumber}`,
+      `${API_BASE_URL}/all?keyword=${keyword}&page=${pageNumber}`,
       config
     );
+
     dispatch({
       type: STUDENT_LIST_SUCCESS,
       payload: data,
@@ -46,27 +54,28 @@ export const listStudents = (keyword = "", pageNumber = "") => async (
   } catch (error) {
     dispatch({
       type: STUDENT_LIST_ERROR,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
+// 🧩 Add a new student
 export const addStudent = (student) => async (dispatch, getState) => {
   try {
     dispatch({ type: STUDENT_ADD_REQUEST });
+
     const {
       userLogin: { userInfo },
     } = getState();
+
     const config = {
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
 
-    const { data } = await axios.post(`/student/addStudent`, student, config);
+    const { data } = await axios.post(`${API_BASE_URL}/add`, student, config);
 
     dispatch({
       type: STUDENT_ADD_SUCCESS,
@@ -75,27 +84,27 @@ export const addStudent = (student) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: STUDENT_ADD_ERROR,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
+// 🧩 Get student details by ID
 export const getStudentDetails = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: STUDENT_DETAILS_REQUEST });
+
     const {
       userLogin: { userInfo },
     } = getState();
+
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
 
-    const { data } = await axios.get(`/student/${id}`, config);
+    const { data } = await axios.get(`${API_BASE_URL}/${id}`, config);
 
     dispatch({
       type: STUDENT_DETAILS_SUCCESS,
@@ -104,27 +113,29 @@ export const getStudentDetails = (id) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: STUDENT_DETAILS_ERROR,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
+// 🧩 Update student info
 export const updateStudent = (student) => async (dispatch, getState) => {
   try {
     dispatch({ type: STUDENT_UPDATE_REQUEST });
+
     const {
       userLogin: { userInfo },
     } = getState();
+
     const config = {
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
+
     const { data } = await axios.put(
-      `/student/${student._id}`,
+      `${API_BASE_URL}/${student._id}`,
       student,
       config
     );
@@ -136,27 +147,27 @@ export const updateStudent = (student) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: STUDENT_UPDATE_ERROR,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
+// 🧩 Delete a student
 export const deleteStudent = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: STUDENT_DELETE_REQUEST });
+
     const {
       userLogin: { userInfo },
     } = getState();
+
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
 
-    const { data } = await axios.delete(`/student/${id}`, config);
+    const { data } = await axios.delete(`${API_BASE_URL}/${id}`, config);
 
     dispatch({
       type: STUDENT_DELETE_SUCCESS,
@@ -165,27 +176,32 @@ export const deleteStudent = (id) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: STUDENT_DELETE_ERROR,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
 
+// 🧩 Get all students in a room
 export const getStudentsByRoomNo = (roomNo) => async (dispatch, getState) => {
   try {
     dispatch({ type: STUDENT_ROOM_NO_REQUEST });
+
     const {
       userLogin: { userInfo },
     } = getState();
+
     const config = {
       headers: {
         Authorization: `Bearer ${userInfo.token}`,
       },
     };
 
-    const { data } = await axios.get(`/student/room/${roomNo}`, config);
+    // Backend route: /student/room/:roomId
+    const { data } = await axios.get(
+      `${API_BASE_URL}/room/${roomNo}`,
+      config
+    );
+
     dispatch({
       type: STUDENT_ROOM_NO_SUCCESS,
       payload: data,
@@ -193,10 +209,7 @@ export const getStudentsByRoomNo = (roomNo) => async (dispatch, getState) => {
   } catch (error) {
     dispatch({
       type: STUDENT_ROOM_NO_ERROR,
-      payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };

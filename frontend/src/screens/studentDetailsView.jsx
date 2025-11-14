@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Row,
@@ -18,17 +18,24 @@ import {
   deleteStudent,
 } from "../actions/studentActions";
 import { STUDENT_UPDATE_RESET } from "../constants/studentConstant";
-const StudentDetailsView = ({ match, history }) => {
+
+const StudentDetailsView = () => {
   const [status, setStatus] = useState("");
+
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { id } = useParams();
+
   const studentDetails = useSelector((state) => state.studentDetails);
   const { loading, error, student } = studentDetails;
+
   const studentUpdate = useSelector((state) => state.studentUpdate);
   const {
     loading: loadingUpdate,
     error: errorUpdate,
     success: successUpdate,
   } = studentUpdate;
+
   const studentDelete = useSelector((state) => state.studentDelete);
   const {
     loading: loadingDelete,
@@ -38,40 +45,43 @@ const StudentDetailsView = ({ match, history }) => {
 
   useEffect(() => {
     if (successDelete) {
-      history.push("/");
+      navigate("/");
+    } else {
+      if (successUpdate) {
+        dispatch({ type: STUDENT_UPDATE_RESET });
+      }
+      if (!student || student._id !== id) {
+        dispatch(getStudentDetails(id));
+      } else if (!status) {
+        setStatus(student.status);
+      }
     }
-    if (successUpdate) {
-      dispatch({ type: STUDENT_UPDATE_RESET });
-    }
-    if (!student || !student._id || student._id !== match.params.id) {
-      dispatch(getStudentDetails(match.params.id));
-    }
-    if (student && student._id && !status) {
-      setStatus(student.status);
-    }
-  }, [dispatch, match, successUpdate, successDelete]);
+  }, [dispatch, id, successUpdate, successDelete, navigate, student, status]);
 
   const navigateToEdit = () => {
-    history.push({
-      pathname: `/student/edit/${student._id}`,
+    navigate(`/student/edit/${student._id}`, {
       state: { studentProps: student },
     });
   };
+
   const updateStatus = () => {
-    student.status = status;
-    dispatch(updateStudent(student));
+    if (student) {
+      dispatch(updateStudent({ ...student, status }));
+    }
   };
 
-  const deleteStuden = () => {
-    if (window.confirm("Are you sure")) {
+  const deleteStudentHandler = () => {
+    if (window.confirm("Are you sure you want to delete this student?")) {
       dispatch(deleteStudent(student._id));
     }
   };
+
   return (
     <>
       <Link className="btn btn-light my-3" to="/">
         Go Back
       </Link>
+
       {loading || loadingUpdate || loadingDelete ? (
         <Loading />
       ) : error ? (
@@ -80,43 +90,64 @@ const StudentDetailsView = ({ match, history }) => {
         <>
           {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
           {errorDelete && <Message variant="danger">{errorDelete}</Message>}
+
           {student && (
-            <Row>
+            <Row className="g-4">
+              {/* Student Image */}
               <Col md={3}>
-                <Image src={student.image} alt={student.name} fluid />
+                <Image
+                  src={student.image}
+                  alt={student.name}
+                  fluid
+                  rounded
+                  className="shadow-sm"
+                />
               </Col>
-              <Col md={3}>
-                <ListGroup variant="flush">
-                  <ListGroup.Item>
-                    <h3>{student.name}</h3>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <span>Phone No:{student.contact}</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <span>Father Contact:{student.fatherContact}</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <span>City:{student.city}</span>
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    <span>Address:{student.address}</span>
-                  </ListGroup.Item>
-                </ListGroup>
-              </Col>
+
+              {/* Basic Info */}
               <Col md={4}>
-                <Card>
+                <Card className="p-3 shadow-sm">
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>
+                      <h3 className="mb-0">{student.name}</h3>
+                      <small className="text-muted">
+                        Stream: {student.category}
+                      </small>
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Phone:</strong>{" "}
+                      <a href={`tel:${student.contact}`}>{student.contact}</a>
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Father’s Contact:</strong>{" "}
+                      <a href={`tel:${student.fatherContact}`}>
+                        {student.fatherContact}
+                      </a>
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>City:</strong> {student.city}
+                    </ListGroup.Item>
+                    <ListGroup.Item>
+                      <strong>Address:</strong> {student.address}
+                    </ListGroup.Item>
+                  </ListGroup>
+                </Card>
+              </Col>
+
+              {/* Status / Update Section */}
+              <Col md={4}>
+                <Card className="p-3 shadow-sm">
                   <ListGroup variant="flush">
                     <ListGroup.Item>
                       <Row>
                         <Col>Room No:</Col>
-                        <Col> {student.roomNo}</Col>
+                        <Col>{student.roomNo}</Col>
                       </Row>
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <Row>
                         <Col>Block No:</Col>
-                        <Col> {student.blockNo}</Col>
+                        <Col>{student.blockNo}</Col>
                       </Row>
                     </ListGroup.Item>
                     <ListGroup.Item>
@@ -140,31 +171,29 @@ const StudentDetailsView = ({ match, history }) => {
                     </ListGroup.Item>
                     <ListGroup.Item>
                       <Button
-                        className="btn-block"
-                        type="button"
+                        className="w-100"
+                        variant="success"
                         onClick={updateStatus}
                       >
-                        Update
+                        Update Status
                       </Button>
                     </ListGroup.Item>
                   </ListGroup>
                 </Card>
               </Col>
-              <Col>
-                <ListGroup variant="flush">
-                  <Row>
-                    <ListGroup.Item variant="secondary">
-                      <Button onClick={navigateToEdit}>
-                        <i className="fas fa-edit"></i>
-                      </Button>
-                    </ListGroup.Item>
-                    <ListGroup.Item>
-                      <Button variant="danger" onClick={deleteStuden}>
-                        <i className="fas fa-trash"></i>
-                      </Button>
-                    </ListGroup.Item>
-                  </Row>
-                </ListGroup>
+
+              {/* Action Buttons */}
+              <Col md={1} className="d-flex flex-column justify-content-start">
+                <Button
+                  variant="outline-primary"
+                  className="mb-2"
+                  onClick={navigateToEdit}
+                >
+                  <i className="fas fa-edit"></i>
+                </Button>
+                <Button variant="danger" onClick={deleteStudentHandler}>
+                  <i className="fas fa-trash"></i>
+                </Button>
               </Col>
             </Row>
           )}
