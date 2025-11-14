@@ -16,7 +16,6 @@ const AnalysisComponent = () => {
     { label: "Status", key: "status" },
   ];
 
-  // CSV data generation
   const csvData = useMemo(() => {
     if (!attendance?.details || !attendance?.data) return [];
 
@@ -28,6 +27,39 @@ const AnalysisComponent = () => {
     }));
   }, [attendance]);
 
+  // Inline styles
+  const tableContainerStyle = {
+    marginTop: "20px",
+    borderRadius: "8px",
+    overflow: "hidden",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.15)",
+  };
+
+  const downloadBtnStyle = {
+    display: "inline-block",
+    marginTop: "15px",
+    padding: "10px 18px",
+    backgroundColor: "#0d6efd",
+    color: "#fff",
+    borderRadius: "6px",
+    textDecoration: "none",
+    fontWeight: "bold",
+  };
+
+  const headerStyle = {
+    backgroundColor: "#0d6efd",
+    color: "white",
+    textAlign: "center",
+    padding: "10px",
+    fontSize: "16px",
+  };
+
+  const cellStyle = {
+    padding: "10px",
+    textAlign: "center",
+    fontSize: "14px",
+  };
+
   return (
     <>
       {error && <Message variant="danger">{error}</Message>}
@@ -36,26 +68,31 @@ const AnalysisComponent = () => {
         <Loading />
       ) : attendance?.details ? (
         <>
-          <Table striped bordered hover responsive className="table-sm">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Contact No</th>
-                <th>Room No</th>
-                <th>Attendance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(attendance.details).map(([id, student]) => (
-                <tr key={id}>
-                  <td>{student.name}</td>
-                  <td>{student.contact}</td>
-                  <td>{student.roomNo}</td>
-                  <td>{attendance.data[id] || "N/A"}</td>
+          <div style={tableContainerStyle}>
+            <Table striped bordered hover responsive>
+
+              <thead>
+                <tr>
+                  <th style={headerStyle}>Name</th>
+                  <th style={headerStyle}>Contact No</th>
+                  <th style={headerStyle}>Room No</th>
+                  <th style={headerStyle}>Attendance</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+
+              <tbody>
+                {Object.entries(attendance.details).map(([id, student]) => (
+                  <tr key={id}>
+                    <td style={cellStyle}>{student.name}</td>
+                    <td style={cellStyle}>{student.contact}</td>
+                    <td style={cellStyle}>{student.roomNo}</td>
+                    <td style={cellStyle}>{attendance.data[id] || "N/A"}</td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </Table>
+          </div>
 
           <CSVLink
             data={csvData}
@@ -63,7 +100,7 @@ const AnalysisComponent = () => {
             filename={`attendance_${new Date()
               .toString()
               .substring(0, 15)}.csv`}
-            className="btn btn-primary"
+            style={downloadBtnStyle}
           >
             Download CSV
           </CSVLink>

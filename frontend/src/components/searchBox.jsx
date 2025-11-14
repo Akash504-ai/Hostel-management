@@ -8,7 +8,6 @@ const SearchBox = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-
     if (keyword.trim()) {
       navigate(`/search/${keyword}`);
     } else {
@@ -19,14 +18,15 @@ const SearchBox = () => {
   return (
     <Form
       onSubmit={submitHandler}
-      className="d-flex align-items-center my-2 my-lg-0"
       role="search"
       style={{
-        backgroundColor: "#f1f3f4",
-        borderRadius: "25px",
-        overflow: "hidden",
-        padding: "2px",
+        display: "flex",
+        alignItems: "center",
+        backgroundColor: "#f1f5f9",
+        borderRadius: "30px",
+        padding: "4px 10px",
         height: "40px",
+        width: "100%",       // 👈 full flexible width inside wrapper
       }}
     >
       <Form.Control
@@ -34,7 +34,6 @@ const SearchBox = () => {
         value={keyword}
         name="q"
         placeholder="Search students..."
-        className="me-2 ms-lg-3"
         onChange={(e) => setKeyword(e.target.value)}
         style={{
           border: "none",
@@ -42,22 +41,25 @@ const SearchBox = () => {
           boxShadow: "none",
           backgroundColor: "transparent",
           fontSize: "0.95rem",
+          paddingLeft: "8px",
+          flex: 1,
         }}
       />
 
       <Button
         type="submit"
-        variant="success"
-        className="px-3"
         style={{
-          borderRadius: "25px",
-          width: "70px",
-          // paddingRight: "5px",
+          height: "32px",
+          width: "32px",
+          borderRadius: "35%",   // 👈 perfect circle
           backgroundColor: "#2563eb",
           border: "none",
-          color: "#fff",
-          fontWeight: "500",
-          transition: "0.2s",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: "16px",
+          cursor: "pointer",
+          transition: "all 0.2s ease",
         }}
         onMouseOver={(e) => (e.target.style.backgroundColor = "#1e40af")}
         onMouseOut={(e) => (e.target.style.backgroundColor = "#2563eb")}

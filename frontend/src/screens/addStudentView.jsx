@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import FormContainer from "../components/formContainer";
 import { useDispatch, useSelector } from "react-redux";
 import { addStudent, updateStudent } from "../actions/studentActions";
 import Loader from "../components/loader";
 import Message from "../components/message";
 import { STUDENT_UPDATE_RESET } from "../constants/studentConstant";
+import { motion } from "framer-motion"; // ⭐ Added Motion
 
 const AddStudentView = () => {
   const navigate = useNavigate();
@@ -36,13 +36,11 @@ const AddStudentView = () => {
   } = studentUpdate;
 
   useEffect(() => {
-    // Redirect on update success
     if (successUpdate) {
       dispatch({ type: STUDENT_UPDATE_RESET });
       navigate("/");
     }
 
-    // Check if editing an existing student
     const student = location.state?.studentProps;
     if (student) {
       setIsEdit(true);
@@ -58,7 +56,6 @@ const AddStudentView = () => {
       setStatus(student.status);
     }
 
-    // Redirect on add success
     if (success) {
       navigate("/");
     }
@@ -67,10 +64,9 @@ const AddStudentView = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     if (isEdit) {
-      const _id = location.state?.studentProps._id;
       dispatch(
         updateStudent({
-          _id,
+          _id: location.state?.studentProps._id,
           name,
           address,
           category,
@@ -101,134 +97,245 @@ const AddStudentView = () => {
     }
   };
 
+  // Styles
+  const inputStyle = {
+    padding: "10px",
+    borderRadius: "8px",
+    border: "1px solid #cbd5e1",
+    fontSize: "0.95rem",
+    width: "100%",
+  };
+
+  const labelStyle = {
+    fontWeight: "600",
+    marginBottom: "6px",
+    color: "#334155",
+  };
+
+  const columnStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+    width: "100%",
+  };
+
   return (
-    <>
-      <Link to="/" className="btn btn-light my-3">
-        Go Back
-      </Link>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        initial={{ opacity: 0, x: -25 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <Link
+          to="/"
+          style={{
+            display: "inline-block",
+            padding: "8px 14px",
+            backgroundColor: "#e2e8f0",
+            color: "#1e293b",
+            textDecoration: "none",
+            borderRadius: "8px",
+            fontWeight: "600",
+            marginBottom: "20px",
+          }}
+        >
+          ⬅ Go Back
+        </Link>
+      </motion.div>
 
       {loading || loadingUpdate ? (
         <Loader />
       ) : (
-        <FormContainer>
-          <h1>{isEdit ? "Edit Student" : "Add Student"}</h1>
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45 }}
+          style={{
+            maxWidth: "900px",
+            margin: "0 auto",
+          }}
+        >
+          <div
+            style={{
+              background: "rgba(255,255,255,0.75)",
+              padding: "30px",
+              borderRadius: "16px",
+              boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+              backdropFilter: "blur(6px)",
+            }}
+          >
+            <h1
+              style={{
+                fontWeight: "700",
+                textAlign: "center",
+                marginBottom: "20px",
+                color: "#0f172a",
+              }}
+            >
+              {isEdit ? "Edit Student" : "Add Student"}
+            </h1>
 
-          {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
-          {error && <Message variant="danger">{error}</Message>}
+            {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
+            {error && <Message variant="danger">{error}</Message>}
 
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId="name" className="mb-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Group controlId="status" className="mb-3">
-              <Form.Label>Status</Form.Label>
-              <Form.Control
-                as="select"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
+            <Form onSubmit={submitHandler}>
+              {/* Two Column Grid */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "20px",
+                }}
               >
-                {["Hostel", "Outside", "Home"].map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </Form.Control>
-            </Form.Group>
+                {/* LEFT COLUMN */}
+                <div style={columnStyle}>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter name"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
 
-            <Form.Group controlId="address" className="mb-3">
-              <Form.Label>Address</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>City</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="Enter city"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
 
-            <Form.Group controlId="city" className="mb-3">
-              <Form.Label>City</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Father's Contact</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={fatherContact}
+                      onChange={(e) => setFatherContact(e.target.value)}
+                      placeholder="Enter father's number"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
 
-            <Form.Group controlId="contact" className="mb-3">
-              <Form.Label>Contact</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Enter phone number"
-                value={contact}
-                onChange={(e) => setContact(e.target.value)}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Room No</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={roomNo}
+                      onChange={(e) => setRoomNo(e.target.value)}
+                      placeholder="Enter room number"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
 
-            <Form.Group controlId="fatherContact" className="mb-3">
-              <Form.Label>Father's Contact</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Enter father's phone number"
-                value={fatherContact}
-                onChange={(e) => setFatherContact(e.target.value)}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Image URL</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={image}
+                      onChange={(e) => setImage(e.target.value)}
+                      placeholder="Enter image URL"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
+                </div>
 
-            <Form.Group controlId="roomNo" className="mb-3">
-              <Form.Label>Room Number</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter room number"
-                value={roomNo}
-                onChange={(e) => setRoomNo(e.target.value)}
-              />
-            </Form.Group>
+                {/* RIGHT COLUMN */}
+                <div style={columnStyle}>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Status</Form.Label>
+                    <Form.Control
+                      as="select"
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      style={inputStyle}
+                    >
+                      <option>Hostel</option>
+                      <option>Outside</option>
+                      <option>Home</option>
+                    </Form.Control>
+                  </Form.Group>
 
-            <Form.Group controlId="blockNo" className="mb-3">
-              <Form.Label>Block Number</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter block number"
-                value={blockNo}
-                onChange={(e) => setBlockNo(e.target.value)}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Address</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="Enter address"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
 
-            <Form.Group controlId="image" className="mb-3">
-              <Form.Label>Image URL</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter image URL"
-                value={image}
-                onChange={(e) => setImage(e.target.value)}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Contact</Form.Label>
+                    <Form.Control
+                      type="number"
+                      value={contact}
+                      onChange={(e) => setContact(e.target.value)}
+                      placeholder="Enter contact"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
 
-            <Form.Group controlId="category" className="mb-3">
-              <Form.Label>Category</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Enter stream/category"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-            </Form.Group>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Block No</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={blockNo}
+                      onChange={(e) => setBlockNo(e.target.value)}
+                      placeholder="Enter block number"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
 
-            <Button type="submit" variant="primary" className="w-100 mt-3">
-              {isEdit ? "Update Student" : "Add Student"}
-            </Button>
-          </Form>
-        </FormContainer>
+                  <Form.Group>
+                    <Form.Label style={labelStyle}>Category / Stream</Form.Label>
+                    <Form.Control
+                      type="text"
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      placeholder="Enter stream"
+                      style={inputStyle}
+                    />
+                  </Form.Group>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                style={{
+                  width: "100%",
+                  padding: "12px",
+                  borderRadius: "10px",
+                  border: "none",
+                  backgroundColor: "#2563eb",
+                  color: "white",
+                  fontWeight: "600",
+                  fontSize: "1rem",
+                  marginTop: "25px",
+                  transition: "0.2s",
+                }}
+              >
+                {isEdit ? "Update Student" : "Add Student"}
+              </motion.button>
+            </Form>
+          </div>
+        </motion.div>
       )}
-    </>
+    </motion.div>
   );
 };
 

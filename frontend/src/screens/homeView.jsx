@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import {
-  Row,
-  Col,
-  ButtonGroup,
-  ToggleButton,
-  Container,
-  Button,
-} from "react-bootstrap";
+import { useNavigate, useParams } from "react-router-dom";
+import { Row, Col, Container, Button } from "react-bootstrap";
+import { motion } from "framer-motion"; // Animation library
 import Student from "../components/student";
 import Loading from "../components/loader";
 import Message from "../components/message";
@@ -20,7 +14,6 @@ const HomeView = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const params = useParams();
-  const location = useLocation();
 
   const [isGrid, setIsGrid] = useState(true);
 
@@ -48,71 +41,130 @@ const HomeView = () => {
   return (
     <div
       style={{
-        backgroundColor: "#f8fafc",
+        backgroundColor: "#f1f5f9",
         minHeight: "100vh",
-        padding: "40px 0",
+        padding: "0 0 40px 0",
       }}
     >
-      <Container>
-        {/* Header Section */}
-        <Row className="align-items-center justify-content-between mb-4">
-          <Col md={6}>
-            <h2
-              style={{
-                color: "#2563eb",
-                fontWeight: "700",
-                letterSpacing: "0.5px",
-              }}
-            >
-              👩‍🎓 Student Management
-            </h2>
-            <p className="text-muted mb-0" style={{ fontSize: "0.95rem" }}>
-              View, manage, and analyze student data efficiently
-            </p>
-          </Col>
+      {/* Hero Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        style={{
+          width: "100%",
+          padding: "60px 20px",
+          background: "rgba(255,255,255,0.6)",
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          borderBottom: "1px solid rgba(0,0,0,0.05)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.05)",
+        }}
+      >
+        <Container>
+          <h1
+            style={{
+              fontWeight: "700",
+              marginBottom: "8px",
+              color: "#0f172a",
+              fontSize: "2rem",
+            }}
+          >
+            Student Management Dashboard
+          </h1>
+          <p
+            style={{
+              color: "#475569",
+              fontSize: "1rem",
+              marginBottom: "0",
+              maxWidth: "550px",
+            }}
+          >
+            A clean and modern interface to view, manage, and organize student data effortlessly.
+          </p>
+        </Container>
+      </motion.div>
 
-          <Col md="auto">
-            <ButtonGroup style={{ borderRadius: "7px", overflow: "hidden" }}>
-              <ToggleButton
-                id="grid-view"
-                type="radio"
-                variant={isGrid ? "primary" : "outline-primary"}
-                name="viewType"
-                value="Grid"
-                checked={isGrid}
-                onChange={() => toggleView("Grid")}
+      <Container style={{ marginTop: "40px" }}>
+        {/* Header Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Row className="align-items-center justify-content-between mb-3">
+            <Col md={6}>
+              <h3
                 style={{
-                  fontWeight: "500",
-                  padding: "8px 16px",
-                  borderRadius: "0",
+                  color: "#1e293b",
+                  fontWeight: "700",
+                  letterSpacing: "0.3px",
+                  marginBottom: "4px",
                 }}
               >
-                 Grid View
-              </ToggleButton>
-              <ToggleButton
-                id="table-view"
-                type="radio"
-                variant={!isGrid ? "primary" : "outline-primary"}
-                name="viewType"
-                value="Table"
-                checked={!isGrid}
-                onChange={() => toggleView("Table")}
+                📋 Student Records
+              </h3>
+              <p style={{ fontSize: "0.9rem", color: "#64748b" }}>
+                Switch between grid or table view anytime.
+              </p>
+            </Col>
+
+            <Col md="auto">
+              <div
                 style={{
-                  fontWeight: "500",
-                  padding: "8px 16px",
-                  borderRadius: "0",
+                  display: "flex",
+                  backgroundColor: "#e2e8f0",
+                  padding: "5px",
+                  borderRadius: "12px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                  gap: "6px",
                 }}
               >
-                 Table View
-              </ToggleButton>
-            </ButtonGroup>
-          </Col>
-        </Row>
+                <Button
+                  onClick={() => toggleView("Grid")}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "10px",
+                    border: "none",
+                    backgroundColor: isGrid ? "#2563eb" : "transparent",
+                    color: isGrid ? "#fff" : "#1e293b",
+                    fontWeight: "600",
+                    transition: "0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    boxShadow: isGrid ? "0 2px 6px rgba(0,0,0,0.15)" : "none",
+                  }}
+                >
+                  📦 Grid
+                </Button>
 
-        {/* Divider Line */}
-        <hr style={{ borderTop: "2px solid #e5e7eb" }} />
+                <Button
+                  onClick={() => toggleView("Table")}
+                  style={{
+                    padding: "8px 16px",
+                    borderRadius: "10px",
+                    border: "none",
+                    backgroundColor: !isGrid ? "#2563eb" : "transparent",
+                    color: !isGrid ? "#fff" : "#1e293b",
+                    fontWeight: "600",
+                    transition: "0.2s",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    boxShadow: !isGrid ? "0 2px 6px rgba(0,0,0,0.15)" : "none",
+                  }}
+                >
+                  📊 Table
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </motion.div>
 
-        {/* Main Section */}
+        <hr style={{ borderTop: "2px solid #e2e8f0" }} />
+
+        {/* Content Section */}
         {loading ? (
           <Loading />
         ) : error ? (
@@ -121,37 +173,61 @@ const HomeView = () => {
           <>
             {isGrid ? (
               <>
-                <Row className="gy-4 mt-3">
-                  {students.length > 0 ? (
-                    students.map((student) => (
-                      <Col
-                        key={student._id}
-                        sm={12}
-                        md={6}
-                        lg={4}
-                        xl={3}
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Student studentDetails={student} />
+                {/* GRID VIEW */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.1, duration: 0.4 }}
+                >
+                  <Row className="gy-4 mt-3">
+                    {students.length > 0 ? (
+                      students.map((student, index) => (
+                        <Col
+                          key={student._id}
+                          sm={12}
+                          md={6}
+                          lg={4}
+                          xl={3}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                              duration: 0.4,
+                              delay: index * 0.05,
+                            }}
+                            style={{
+                              width: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Student studentDetails={student} />
+                          </motion.div>
+                        </Col>
+                      ))
+                    ) : (
+                      <Col className="text-center">
+                        <Message variant="info">No students found.</Message>
                       </Col>
-                    ))
-                  ) : (
-                    <Col className="text-center">
-                      <Message variant="info">No students found.</Message>
-                    </Col>
-                  )}
-                </Row>
+                    )}
+                  </Row>
+                </motion.div>
 
-                {/* Pagination */}
                 <div className="d-flex justify-content-center mt-5">
                   <Paginate pages={pages} page={page} keyword={keyword || ""} />
                 </div>
               </>
             ) : (
-              <div
+              // TABLE VIEW
+              <motion.div
+                initial={{ opacity: 0, y: 25 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
                 style={{
                   backgroundColor: "#fff",
                   padding: "20px",
@@ -161,7 +237,7 @@ const HomeView = () => {
                 }}
               >
                 <StudentsTableView keyword={keyword} pageNumber={pageNumber} />
-              </div>
+              </motion.div>
             )}
           </>
         )}

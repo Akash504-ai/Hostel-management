@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+
 import Message from "../../components/message";
 import Loader from "../../components/loader";
 import FormContainer from "../../components/formContainer";
+
 import { register } from "../../actions/userActions";
 
 const RegisterView = () => {
@@ -18,34 +20,39 @@ const RegisterView = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const userRegister = useSelector((state) => state.userRegister);
-  const { loading, error, userInfo } = userRegister;
+  const { loading, error, userInfo } = useSelector(
+    (state) => state.userRegister
+  );
 
-  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+  const redirect =
+    new URLSearchParams(location.search).get("redirect") || "/";
 
   useEffect(() => {
     if (userInfo) {
       navigate(redirect);
     }
-  }, [userInfo, redirect, navigate]);
+  }, [userInfo, navigate, redirect]);
 
   const submitHandler = (e) => {
     e.preventDefault();
+
     if (password !== confirmPassword) {
-      setMessage("Passwords do not match");
-    } else {
-      dispatch(register(name, email, password));
+      return setMessage("Passwords do not match");
     }
+
+    dispatch(register(name, email, password));
   };
 
   return (
     <FormContainer>
       <h1>Create Account</h1>
+
       {message && <Message variant="danger">{message}</Message>}
       {error && <Message variant="danger">{error}</Message>}
       {loading && <Loader />}
 
       <Form onSubmit={submitHandler}>
+
         <Form.Group controlId="name" className="mb-3">
           <Form.Label>Full Name</Form.Label>
           <Form.Control
